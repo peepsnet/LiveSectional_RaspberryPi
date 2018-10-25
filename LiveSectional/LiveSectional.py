@@ -6,6 +6,10 @@
 ##																			##
 ##############################################################################
 
+#todo:
+# Error checking for settings.
+# i.e. do not allow addressed > totalLEDs
+
 import time
 start = time.time()
 import os
@@ -26,9 +30,9 @@ config.read("config.txt")
 
 #Load enough data to get started
 currentHour = int(datetime.datetime.now().strftime("%H"))
-totalLEDs = int(config.get("LED Info","totalLEDs"))
-sleepStart = int(config.get("Sleep Hours","sleepStart"))
-sleepStop = int(config.get("Sleep Hours","sleepStop"))
+totalLEDs = int(config.get("generalSettings","totalLEDs"))
+sleepStart = int(config.get("sleepHours","sleepStart"))
+sleepStop = int(config.get("sleepHours","sleepStop"))
 
 # The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
 # Specify a software SPI connection for Raspberry Pi on the following pins:
@@ -146,36 +150,36 @@ def debug(var):
 ######################################################
 
 #Load the Config.txt Vars
-maxBrightness = float(config.get("LED Info","maxBrightness"))
-statusLED = int(config.get("LED Info","statusLED"))
-metarLED = int(config.get("LED Info","metarLED"))
+maxBrightness = float(config.get("generalSettings","maxBrightness"))
+statusLED = int(config.get("extraLEDs","statusLED"))
+metarLED = int(config.get("extraLEDs","metarLED"))
 
 legendLEDs = {}
-legendLEDs["VFR"] = int(config.get("LED Info", "legendVFR"))
-legendLEDs["MVFR"] = int(config.get("LED Info", "legendMVFR"))
-legendLEDs["IFR"] = int(config.get("LED Info", "legendIFR"))
-legendLEDs["LIFR"] = int(config.get("LED Info", "legendLIFR"))
-legendLEDs["Missing"] = int(config.get("LED Info", "legendMissing"))
+legendLEDs["VFR"] = int(config.get("extraLEDs", "legendVFR"))
+legendLEDs["MVFR"] = int(config.get("extraLEDs", "legendMVFR"))
+legendLEDs["IFR"] = int(config.get("extraLEDs", "legendIFR"))
+legendLEDs["LIFR"] = int(config.get("extraLEDs", "legendLIFR"))
+legendLEDs["Missing"] = int(config.get("extraLEDs", "legendMissing"))
 
-windMax = int(config.get("Wind Alerts", "windMax"))
-gustMax = int(config.get("Wind Alerts", "gustMax"))
-windDim = float(config.get("Wind Alerts", "windDim"))
+windMax = int(config.get("windAlerts", "windMax"))
+gustMax = int(config.get("windAlerts", "gustMax"))
+windDim = float(config.get("windAlerts", "windDim"))
 
-dimStart = int(config.get("Dim Hours", "dimStart"))
-dimStop = int(config.get("Dim Hours", "dimStop"))
+dimStart = int(config.get("dimHours", "dimStart"))
+dimStop = int(config.get("dimHours", "dimStop"))
 if ((currentHour >= dimStart) and (dimStart >= 0)) or ((currentHour < dimStop) and (dimStop >= 0)):
-	Dimming = float(config.get("Dim Hours", "Dimming"))
+	Dimming = float(config.get("dimHours", "Dimming"))
 else:
 	Dimming = 0
 
 colorRGBs = {}
-colorRGBs["VFR"] = str(config.get("RGB Colors", "colorVFR")).split(",")
-colorRGBs["MVFR"] = str(config.get("RGB Colors", "colorMVFR")).split(",")
-colorRGBs["IFR"] = str(config.get("RGB Colors", "colorIFR")).split(",")
-colorRGBs["LIFR"] = str(config.get("RGB Colors", "colorLIFR")).split(",")
-colorRGBs["Missing"] =  str(config.get("RGB Colors", "colorMissing")).split(",")
-colorRGBs["Red"] =  str(config.get("RGB Colors", "colorRed")).split(",")
-colorRGBs["Green"] =  str(config.get("RGB Colors", "colorGreen")).split(",")
+colorRGBs["VFR"] = str(config.get("colorsRGB", "colorVFR")).split(",")
+colorRGBs["MVFR"] = str(config.get("colorsRGB", "colorMVFR")).split(",")
+colorRGBs["IFR"] = str(config.get("colorsRGB", "colorIFR")).split(",")
+colorRGBs["LIFR"] = str(config.get("colorsRGB", "colorLIFR")).split(",")
+colorRGBs["Missing"] =  str(config.get("colorsRGB", "colorMissing")).split(",")
+colorRGBs["Red"] =  str(config.get("colorsRGB", "colorRed")).split(",")
+colorRGBs["Green"] =  str(config.get("colorsRGB", "colorGreen")).split(",")
 
 #Test for script arguements present
 if ("debug" in sys.argv):
