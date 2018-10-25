@@ -8,22 +8,50 @@ totalLEDs: 50
 ; Decrease this value to decrease the brightness
 maxBrightness: 255
 
-; If you want to turn off the LEDs 
 [sleepHours]
+; If you want to turn off the LEDs at night
+; sleepStart is the start hour(in 24-hour format)
+; sleepStop is the hour to end(in 24-hour format)
+; Note: sleepStart has to be greater then sleepStop
+; sleepStart: 1 and sleepStop: 6 is not allowed
+; sleepStart: 23 and sleepStop: 5 is valid
+; Set each to -1 to disable
 sleepStart: 22
 sleepStop: 6
 
 [dimHours]
+; If you want to dim off the LEDs at night
+; dimStart is the start hour(in 24-hour format)
+; dimStop is the hour to end(in 24-hour format)
+; Note: dimStart has to be greater then dimStop
+; dimStart: 1 and dimStop: 6 is not allowed
+; dimStart: 23 and dimStop: 5 is valid
+; Set each to -1 to disable
 dimStart: 20
 dimStop: 7
+
+; This is the value to dim the LEDs
+; Value is from 0 to 1 
+; A value .2 would decrease the LED value by 20%
 Dimming: .2
 
 [windAlerts]
+; These values can change the intensity of the LEDs for
+; stations that have winds or gusts above the values below
 windMax: 4
 gustMax: 15
+
+; This is the value to dim the LEDs when a station has
+; values equal to or greater then the ones set above
+; Value is from 0 to 1 
+; A value .2 would decrease the LED value by 20%
 windDim: .20
 
 [colorsRGB]
+; Here you can define the colors you want for each field category
+; and the RED(failure) or GREEN(success) indicators
+; Values are (RED, GREEN, BLUE)
+: Each can have a value from 0 - 255
 colorVFR: 0,255,0
 colorMVFR: 0,0,255
 colorIFR: 255,0,0
@@ -33,19 +61,24 @@ colorRed: 255,0,0
 colorGreen: 0,255,0
 
 [extraLEDs]
-; Do you have a STATUS LED or METAR Retrieved?
+; Do you have a STATUS LED or METAR Retrieved LED?
 ; If NO set to -1 (or any int < 0)
 ; If YES set to address of LED (0 - totalLEDs-1)
-
 statusLED: 1
 metarLED: 2
+
+; Do you have a Legend LED
+; If NO set to -1 (or any int < 0)
+; If YES set to address of LED (0 - totalLEDs-1)
 legendVFR: 22
 legendMVFR: 23
 legendIFR: 24
 legendLIFR: 25
 legendMissing: 26
 
-
 [Shutdown Control]
+; Time to hold down the Power/Reset button for shutdown
 shutdownMinSeconds: 5
+
+; Pin the switch is connected to
 shutdownPin: 5
