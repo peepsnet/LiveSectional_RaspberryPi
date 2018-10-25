@@ -1,33 +1,29 @@
-[Startup]
-startUp: rainbow
 
-[LED Info]
+[generalSettings]
+; Total LEDs in the String
 totalLEDs: 50
+
+; Maximum brightness of any LED RGB value
+; 0 - 255
+; Decrease this value to decrease the brightness
 maxBrightness: 255
-statusLED: 1
-metarLED: 2
-legendVFR: 1
-legendMVFR: -1
-legendIFR: -1
-legendLIFR: -1
-legendMissing: -1
 
-
-[Sleep Hours]
+; If you want to turn off the LEDs 
+[sleepHours]
 sleepStart: 22
 sleepStop: 6
 
-[Dim Hours]
+[dimHours]
 dimStart: 20
 dimStop: 7
 Dimming: .2
 
-[Wind Alerts]
+[windAlerts]
 windMax: 4
 gustMax: 15
 windDim: .20
 
-[RGB Colors]
+[colorsRGB]
 colorVFR: 0,255,0
 colorMVFR: 0,0,255
 colorIFR: 255,0,0
@@ -35,6 +31,20 @@ colorLIFR: 255,0,255
 colorMissing: 128,128,128
 colorRed: 255,0,0
 colorGreen: 0,255,0
+
+[extraLEDs]
+; Do you have a STATUS LED or METAR Retrieved?
+; If NO set to -1 (or any int < 0)
+; If YES set to address of LED (0 - totalLEDs-1)
+
+statusLED: 1
+metarLED: 2
+legendVFR: 22
+legendMVFR: 23
+legendIFR: 24
+legendLIFR: 25
+legendMissing: 26
+
 
 [Shutdown Control]
 shutdownMinSeconds: 5
