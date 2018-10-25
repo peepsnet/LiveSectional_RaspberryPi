@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 ##############################################################################
 ##							Live Sectional Script							##
 ##																			##
@@ -87,13 +86,13 @@ def demoLEDsOn():
 	if demoVFR > 0:
 		setPixelRGB(demoVFR, int(colorVFR[0]),int(colorVFR[1]),int(colorVFR[2]))
 	if demoMVFR > 0:
-		setPixelRGB(demoVFR, int(colorMVFR[0]),int(colorMVFR[1]),int(colorMVFR[2]))
+		setPixelRGB(demoMVFR, int(colorMVFR[0]),int(colorMVFR[1]),int(colorMVFR[2]))
 	if demoIFR > 0:
-		setPixelRGB(demoVFR, int(colorIFR[0]),int(colorIFR[1]),int(colorIFR[2]))
+		setPixelRGB(demoIFR, int(colorIFR[0]),int(colorIFR[1]),int(colorIFR[2]))
 	if demoLIFR > 0:
-		setPixelRGB(demoVFR, int(colorLIFR[0]),int(colorLIFR[1]),int(colorLIFR[2]))
+		setPixelRGB(demoLIFR, int(colorLIFR[0]),int(colorLIFR[1]),int(colorLIFR[2]))
 	if demoMissing > 0:
-		setPixelRGB(demoVFR, int(colorMissing[0]),int(colorMissing[1]),int(colorMissing[2]))
+		setPixelRGB(demoMissing, int(colorMissing[0]),int(colorMissing[1]),int(colorMissing[2]))
 
 def demoLEDsOff():
 	if demoVFR > 0:
