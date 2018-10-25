@@ -98,13 +98,13 @@ def demoLEDsOff():
 	if demoVFR > 0:
 		setPixelRGB(demoVFR, 0, 0, 0)
 	if demoMVFR > 0:
-		setPixelRGB(demoVFR, 0, 0, 0)
+		setPixelRGB(demoMVFR, 0, 0, 0)
 	if demoIFR > 0:
-		setPixelRGB(demoVFR, 0, 0, 0)
+		setPixelRGB(demoIFR, 0, 0, 0)
 	if demoLIFR > 0:
-		setPixelRGB(demoVFR, 0, 0, 0)
+		setPixelRGB(demoLIFR, 0, 0, 0)
 	if demoMissing > 0:
-		setPixelRGB(demoVFR, 0, 0, 0)
+		setPixelRGB(demoMissing, 0, 0, 0)
 
 def calcRGB(rgb, ID):
 	debug("Winds: WindSpeed: " + str(stationsData[ID]["WS"]) + " MaxWind: " + str(windMax) + " GustSpeed: " + str(stationsData[ID]["GS"]) + " MaxGust: " + str(gustMax))
@@ -279,7 +279,8 @@ else:
 			debug("Unable to find a match for " + ICAO)
 		debug("--------------------------------------------------------")
 		currentLED += 1
-#print(stationsData)
+
+debug("Sending all colors to LEDs - showPixels()")
 showPixels()
 
 debug("FINISHED")
