@@ -257,27 +257,28 @@ pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DE
 #Test for script arguements present
 #Call by adding "debug" as an arg
 # LiveSectional.py debug
-if ("debug" in sys.argv):
+if ("debug" in sys.argv) or ("check" in sys.argv):
 	debugOn = True
+
 
 debug("\n-------------------------------------------\nSTARTING LIVE SECTIONAL\n-------------------------------------------\n")
 
-if ("check" in sys.argv):
-	print("Checking settings... We have to disable sleep to continue")
-	sleepOn = False
 
 #Should we even start all this stuff up or Sleep the Map
 #if ((sleepStart >= 0) and (sleepStop >= 0)) or :
 if is_hour_between(currentHour, sleepStart, sleepStop) and sleepOn:
-	debug("Within Sleep Time. Shutting off LED and quitting...")
+	debug("Within Sleep Time. Shutting off LED and quitting... Add skip to commandline to overwrite")
 	pixels.clear()
 	pixels.show()
-	sys.exit()
+	if ("skip" not in sys.argv):
+		sys.exit()
 
 #When the script is called from rc.local with the arg "startup"
 #Check settings and if successful fun startUpLEDs function
 # "LiveSectional.py startup"
-if ("startup" in sys.argv) or ("check" in sys.argv):
+
+if ("startup" in sys.argv) or ("check" in sys.argv):	
+	debug("Checking settings...")
 	if not settingsCheck():
 		debug("Settings check Failed. Flashing RED...")
 		for x in range(5):
@@ -290,8 +291,8 @@ if ("startup" in sys.argv) or ("check" in sys.argv):
 		clearPixels()
 		showPixels()
 		sys.exit()
-
-if ("startup" in sys.argv):		
+	else:
+		debug("All Settings Passed Checks!")
 	startUpLEDs()
 
 
