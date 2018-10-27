@@ -4,7 +4,10 @@
 ##																			##
 ##																			##
 ##############################################################################
-
+## To DO:
+## Check for airport and config file before settings check
+## Create visual error codes. Flash all LEDs red for count to indicate error.
+## Flash connected and metar LEDs if test fails
 import time
 start = time.time()
 import os
@@ -23,34 +26,13 @@ import ConfigParser
 ##################### Functions ######################
 ######################################################
 
-#Function to make the LEDs do stuff when the script is called from rc.local prior to the first cron job call
-def startUpLEDs():
-	#Startup LED check and cool effect
-	debug("Setting All LEDs to WHITE(255,255,255)")
-	setPixelsRGB([255 ,255 ,255])
-	showPixels()
-	time.sleep(1)
-	debug("Setting All LEDs to RED(255,0,0)")
-	setPixelsRGB([255 ,0 ,0])
-	showPixels()
-	time.sleep(0.5)
-	debug("Setting All LEDs to GREEN(0,255,0)")
-	setPixelsRGB([0 ,255 ,0])
-	showPixels()
-	time.sleep(0.5)
-	debug("Setting All LEDs to BLUE(0,0,255)")
-	setPixelsRGB([0 ,0 ,255])
-	showPixels()
-	time.sleep(1)
-	clearPixels()
-	showPixels()
-	#Light each Pixel for 75ms for testing
-	for x in range(totalLEDs):
-		debug("Setting LED# " + str(x) + " to (255,255,255)")
-		setPixelRGB(x, [255, 255, 255])
-		showPixels()
-		time.sleep(0.075)
-		clearPixels()
+def dependencyCheck():
+	f1 = os.path.isfile(airportListFile)
+	f2 = os.path.isfile(configFile)
+	if f1 and f2 :
+		return True
+	else:
+		return False
 
 def settingsCheck():
 	errors = False
@@ -103,6 +85,35 @@ def settingsCheck():
 	else:
 		return True
 
+#Function to make the LEDs do stuff when the script is called from rc.local prior to the first cron job call
+def startUpLEDs():
+	#Startup LED check and cool effect
+	debug("Setting All LEDs to WHITE(255,255,255)")
+	setPixelsRGB([255 ,255 ,255])
+	showPixels()
+	time.sleep(1)
+	debug("Setting All LEDs to RED(255,0,0)")
+	setPixelsRGB([255 ,0 ,0])
+	showPixels()
+	time.sleep(0.5)
+	debug("Setting All LEDs to GREEN(0,255,0)")
+	setPixelsRGB([0 ,255 ,0])
+	showPixels()
+	time.sleep(0.5)
+	debug("Setting All LEDs to BLUE(0,0,255)")
+	setPixelsRGB([0 ,0 ,255])
+	showPixels()
+	time.sleep(1)
+	clearPixels()
+	showPixels()
+	#Light each Pixel for 75ms for testing
+	for x in range(totalLEDs):
+		debug("Setting LED# " + str(x) + " to (255,255,255)")
+		setPixelRGB(x, [255, 255, 255])
+		showPixels()
+		time.sleep(0.075)
+		clearPixels()
+
 def getAirportList():
 	#Read in LED Address/Airport list
 	with open(airportListFile) as f:
@@ -118,7 +129,6 @@ def getAirportLEDs():
 			notNulls[IDs] = x
 		x += 1
 	return notNulls
-
 
 def calcRGB(rgb, ID=None):
 	wd = 0
@@ -187,6 +197,23 @@ def is_hour_between(now, start, end):
 	else: # over midnight e.g., 23:30-04:15
 		return start <= now or now < end
 
+def errorLEDFlash(flash):
+	setPixelsRGB([255 ,0 ,0])
+	showPixels()
+	time.sleep(1)
+	clearPixels()
+	showPixels()
+	time.sleep(1)
+	for x in range(flash):
+		setPixelsRGB([255 ,0 ,0])
+		showPixels()
+		time.sleep(0.5)
+		clearPixels()
+		showPixels()
+		time.sleep(0.75)
+	clearPixels()
+	showPixels()
+
 def debug(var):
 	if debugOn:
 		print(var)
@@ -200,6 +227,17 @@ debugOn = False
 configFile = "config.txt"
 airportListFile = "airports.txt"
 currentHour = int(datetime.datetime.now().strftime("%H"))
+
+# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
+# Specify a software SPI connection for Raspberry Pi on the following pins:
+#PIXEL_CLOCK = 18
+#PIXEL_DOUT  = 23
+#pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
+
+# Alternatively specify a hardware SPI connection on /dev/spidev0.0:
+SPI_PORT = 0
+SPI_DEVICE = 0
+pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
 
 #Load Config Data
 config = ConfigParser.SafeConfigParser()
@@ -243,17 +281,6 @@ colorRGBs["Missing"] =  str(config.get("colorsRGB", "colorMissing")).split(",")
 colorRGBs["Red"] =  str(config.get("colorsRGB", "colorRed")).split(",")
 colorRGBs["Green"] =  str(config.get("colorsRGB", "colorGreen")).split(",")
 
-# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
-# Specify a software SPI connection for Raspberry Pi on the following pins:
-#PIXEL_CLOCK = 18
-#PIXEL_DOUT  = 23
-#pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
-
-# Alternatively specify a hardware SPI connection on /dev/spidev0.0:
-SPI_PORT = 0
-SPI_DEVICE = 0
-pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
-
 #Test for script arguements present
 #Call by adding "debug" as an arg
 # LiveSectional.py debug
@@ -277,19 +304,12 @@ if is_hour_between(currentHour, sleepStart, sleepStop) and sleepOn:
 #Check settings and if successful fun startUpLEDs function
 # "LiveSectional.py startup"
 
-if ("startup" in sys.argv) or ("check" in sys.argv):	
+if ("startup" in sys.argv) or ("check" in sys.argv):
+	
 	debug("Checking settings...")
 	if not settingsCheck():
 		debug("Settings check Failed. Flashing RED...")
-		for x in range(5):
-			setPixelsRGB([255 ,0 ,0])
-			showPixels()
-			time.sleep(0.5)
-			clearPixels()
-			showPixels()
-			time.sleep(0.75)
-		clearPixels()
-		showPixels()
+		errorLEDFlash(5)
 		sys.exit()
 	else:
 		debug("All Settings Passed Checks!")
