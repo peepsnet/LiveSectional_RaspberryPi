@@ -228,17 +228,6 @@ configFile = "config.txt"
 airportListFile = "airports.txt"
 currentHour = int(datetime.datetime.now().strftime("%H"))
 
-# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
-# Specify a software SPI connection for Raspberry Pi on the following pins:
-#PIXEL_CLOCK = 18
-#PIXEL_DOUT  = 23
-#pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
-
-# Alternatively specify a hardware SPI connection on /dev/spidev0.0:
-SPI_PORT = 0
-SPI_DEVICE = 0
-pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
-
 #Load Config Data
 config = ConfigParser.SafeConfigParser()
 config.read(configFile)
@@ -280,6 +269,17 @@ colorRGBs["LIFR"] = str(config.get("colorsRGB", "colorLIFR")).split(",")
 colorRGBs["Missing"] =  str(config.get("colorsRGB", "colorMissing")).split(",")
 colorRGBs["Red"] =  str(config.get("colorsRGB", "colorRed")).split(",")
 colorRGBs["Green"] =  str(config.get("colorsRGB", "colorGreen")).split(",")
+
+# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
+# Specify a software SPI connection for Raspberry Pi on the following pins:
+#PIXEL_CLOCK = 18
+#PIXEL_DOUT  = 23
+#pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
+
+# Alternatively specify a hardware SPI connection on /dev/spidev0.0:
+SPI_PORT = 0
+SPI_DEVICE = 0
+pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
 
 #Test for script arguements present
 #Call by adding "debug" as an arg
