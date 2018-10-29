@@ -22,6 +22,8 @@ ToDo:
     - [ ] iii)  How to connect to WiFi on boot(headless)
     - [ ] iv)   Expand Filesystem
     - [ ] v)    Download install.sh to get scripts(wget)
+    - [ ] vi)   chmod +x install.sh
+    - [ ] vii)  ./install.sh
   - [ ] b) Error Flashing
   - [ ] c) Status and Metar LEDs
   - [ ] d) Legend LEDs
