@@ -8,15 +8,14 @@ I will hope to release a V1.0 soon.
 Use at your own risk!
 
 ToDo:
-- [ ] 1) Finish install.sh
+- [ ] 1) Finish StartHere.sh - This script will install and then config or config
   - [ ] a) edit /home/pi/.local/lib/python2.7/site-packages/Adafruit_WS2801/WS2801.py line 124 to call ## self.set_pixel_rgb(i, r, g, b)
   - [ ] b) edit rc.local to call /usr/bin/python ~/LiveSectional/pishutdown.py
   - [ ] c) edit rc.local to call /usr/bin/python ~/LiveSectional/LiveSectional.py startup
   - [ ] d) Add Cron for LiveSectional.py to be called as user specified interval
+  - [ ] e) add code to modify settings in config.txt
 
-- [ ] 2) Create settings.sh to edit config.txt by user prompts
-
-- [ ] 3) Documentation
+- [ ] 2) Documentation
   - [ ] a) Install Steps
     - [ ] i)    How to install Raspbian
     - [ ] ii)   How to enable SSH(headless)
