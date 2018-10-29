@@ -33,7 +33,7 @@ ToDo:
 
  
 Required Library [adafruit/Adafruit_Python_WS2801](https://github.com/adafruit/Adafruit_Python_WS2801)
-https://github.com/adafruit/Adafruit_Python_WS2801
+
 
 Required Library [adafruit/Adafruit_Python_GPIO](https://github.com/adafruit/Adafruit_Python_GPIO)
-https://github.com/adafruit/Adafruit_Python_GPIO
+
