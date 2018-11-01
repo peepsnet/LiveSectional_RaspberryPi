@@ -9,8 +9,7 @@ Use at your own risk!
 
 ToDo:
 - [ ] 1) Finish StartHere.sh - This script will install and then config or config
-  - [ ] a) edit rc.local to call /usr/bin/python ~/LiveSectional/pishutdown.py
-  - [ ] b) edit rc.local to call /usr/bin/python ~/LiveSectional/LiveSectional.py startup
+  - [ ] a) add systemd entried for startup of LiveSectional.py and pipowerbtn.py
   - [ ] c) Add Cron for LiveSectional.py to be called as user specified interval
   - [ ] d) add code to modify settings in config.txt
 
