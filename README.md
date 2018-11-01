@@ -33,8 +33,7 @@ ToDo:
 - [ ] 4) continue to tweak LiveSectional.py code till I am satified or bored
 
  
-Required Library [adafruit/Adafruit_Python_WS2801](https://github.com/adafruit/Adafruit_Python_WS2801)
-
-
-Required Library [adafruit/Adafruit_Python_GPIO](https://github.com/adafruit/Adafruit_Python_GPIO)
+Required Library [jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)
+Install by:
+pip install rpi_ws281x
 
