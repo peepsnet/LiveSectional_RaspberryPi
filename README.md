@@ -9,11 +9,10 @@ Use at your own risk!
 
 ToDo:
 - [ ] 1) Finish StartHere.sh - This script will install and then config or config
-  - [ ] a) edit /home/pi/.local/lib/python2.7/site-packages/Adafruit_WS2801/WS2801.py line 124 to call ## self.set_pixel_rgb(i, r, g, b)
-  - [ ] b) edit rc.local to call /usr/bin/python ~/LiveSectional/pishutdown.py
-  - [ ] c) edit rc.local to call /usr/bin/python ~/LiveSectional/LiveSectional.py startup
-  - [ ] d) Add Cron for LiveSectional.py to be called as user specified interval
-  - [ ] e) add code to modify settings in config.txt
+  - [ ] a) edit rc.local to call /usr/bin/python ~/LiveSectional/pishutdown.py
+  - [ ] b) edit rc.local to call /usr/bin/python ~/LiveSectional/LiveSectional.py startup
+  - [ ] c) Add Cron for LiveSectional.py to be called as user specified interval
+  - [ ] d) add code to modify settings in config.txt
 
 - [ ] 2) Documentation
   - [ ] a) Install Steps
@@ -34,6 +33,8 @@ ToDo:
 
  
 Required Library [jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)
+
 Install by:
+
 pip install rpi_ws281x
 
