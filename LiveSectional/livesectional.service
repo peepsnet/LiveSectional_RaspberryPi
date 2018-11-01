@@ -1,0 +1,11 @@
+[Unit]
+Description=livesectional
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/bin/python /home/pi/LiveSectional/LiveSectional.py startup
+ExecStop=/usr/bin/python /home/pi/LiveSectional/LiveSectional.py shutdown
+
+[Install]
+WantedBy=multi-user.target

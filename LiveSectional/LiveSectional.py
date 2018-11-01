@@ -8,6 +8,8 @@
 ## Check for airport and config file before settings check
 ## Create visual error codes. Flash all LEDs red for count to indicate error.
 ## Flash connected and metar LEDs if test fails
+#import pdb; pdb.set_trace()
+
 import time
 start = time.time()
 import os
@@ -17,9 +19,7 @@ import urllib2
 import xml.etree.ElementTree as ET
 import time
 import datetime
-import RPi.GPIO as GPIO
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_WS2801
+from rpi_ws281x import *
 import ConfigParser
 
 ######################################################
@@ -39,46 +39,46 @@ def settingsCheck():
 	debug("Checking for errors in the config data")
 	#Check totalLEDs
 	if (sum(1 for line in open(airportListFile)) > totalLEDs):
-		print("ERROR: totalLEDs in " + configFile + " less then total entries in " + airportList)
+		print("\033[7mERROR:\033[m totalLEDs in " + configFile + " less then total entries in " + airportListFile)
 		errors = True
 	if not (maxBrightness in range(0,256)):
-		print("ERROR: maxBrightness is not 0-255")
+		print("\033[7mERROR:\033[m maxBrightness is not 0-255")
 		errors = True
 	if ((not sleepStart in range(0,24)) or (not sleepStop in range(0,24))) and sleepOn :
-		print("ERROR: sleepStart and sleepStop values must be between 0-23 or disable by setting sleepOn to False")
+		print("\033[7mERROR:\033[m sleepStart and sleepStop values must be between 0-23 or disable by setting sleepOn to False")
 		errors = True
 	if ((not dimStart in range(0,24)) or (not dimStop in range(0,24))) and dimOn :
-		print("ERROR: dimStart and dimStop values must be between 0-23 or disable by setting dimOn to False")
+		print("\033[7mERROR:\033[m dimStart and dimStop values must be between 0-23 or disable by setting dimOn to False")
 		errors = True
 	if not (0 <= Dimming <= 1):
-		print("ERROR: Dimming is not a valid value. Valid range is 0 - 1 in .01 increments.")
+		print("\033[7mERROR:\033[m Dimming is not a valid value. Valid range is 0 - 1 in .01 increments.")
 		errors = True
 	if not windMax in range(3,51):
-		print("ERROR: windMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
+		print("\033[7mERROR:\033[m windMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
 		errors=True
 	if not gustMax in range(3,51):
-		print("ERROR: gustMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
+		print("\033[7mERROR:\033[m gustMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
 		errors=True
 	if not (0 <= windDim <= 1):
-		print("ERROR: windDim is not a valid value. Valid range is 0-1 in increments of .01")
+		print("\033[7mERROR:\033[m windDim is not a valid value. Valid range is 0-1 in increments of .01")
 		errors=True
 	for checkRGB in colorRGBs:
 		if not (int(colorRGBs[checkRGB][0]) in range(0,256)):
-			print("ERROR: colorsRGB RED for color " + checkRGB + " is not in range. Must be 0-255")
+			print("\033[7mERROR:\033[m colorsRGB RED for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		if not (int(colorRGBs[checkRGB][1]) in range(0,256)):
-			print("ERROR: colorsRGB GREEN for color " + checkRGB + " is not in range. Must be 0-255")
+			print("\033[7mERROR:\033[m colorsRGB GREEN for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		if not (int(colorRGBs[checkRGB][2]) in range(0,256)):
-			print("ERROR: colorsRGB BLUE for color " + checkRGB + " is not in range. Must be 0-255")
+			print("\033[7mERROR:\033[m colorsRGB BLUE for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		stationLEDs = getAirportLEDs()
 		miscLEDs = config.items("extraLEDs")
 		for stationLED in stationLEDs:
 			for miscLED in miscLEDs:
 				if int(stationLEDs[stationLED]) == int(miscLED[1]):
-					print("ERROR: An LED address mismatch was found.")
-					print("ERROR: " + stationLED + " LED location conflicts with " + miscLED[0])
+					print("\033[7mERROR:\033[m An LED address mismatch was found.")
+					print("\033[7mERROR:\033[m " + stationLED + " LED location conflicts with " + miscLED[0])
 					errors = True
 	if errors:
 		return False
@@ -87,19 +87,23 @@ def settingsCheck():
 
 #Function to make the LEDs do stuff when the script is called from rc.local prior to the first cron job call
 def startUpLEDs():
+	sleepTimeMS = 3000
 	#Startup LED check and cool effect
+	clearPixels()
+	showPixels()
+	time.sleep(sleepTimeMS/1000)
 	debug("Setting All LEDs to WHITE(255,255,255)")
 	setPixelsRGB([255 ,255 ,255])
 	showPixels()
-	time.sleep(1)
+	time.sleep(sleepTimeMS/1000)
 	debug("Setting All LEDs to RED(255,0,0)")
 	setPixelsRGB([255 ,0 ,0])
 	showPixels()
-	time.sleep(0.5)
+	time.sleep(sleepTimeMS/1000)
 	debug("Setting All LEDs to GREEN(0,255,0)")
 	setPixelsRGB([0 ,255 ,0])
 	showPixels()
-	time.sleep(0.5)
+	time.sleep(sleepTimeMS/1000)
 	debug("Setting All LEDs to BLUE(0,0,255)")
 	setPixelsRGB([0 ,0 ,255])
 	showPixels()
@@ -111,8 +115,9 @@ def startUpLEDs():
 		debug("Setting LED# " + str(x) + " to (255,255,255)")
 		setPixelRGB(x, [255, 255, 255])
 		showPixels()
-		time.sleep(0.075)
+		time.sleep(0.05)
 		clearPixels()
+		showPixels()
 
 def getAirportList():
 	#Read in LED Address/Airport list
@@ -134,7 +139,8 @@ def calcRGB(rgb, ID=None):
 	wd = 0
 	if ID:
 		debug("Winds: WindSpeed: " + str(stationsData[ID]["WS"]) + " MaxWind: " + str(windMax) + " GustSpeed: " + str(stationsData[ID]["GS"]) + " MaxGust: " + str(gustMax))
-		if (int(stationsData[ID]["WS"]) > windMax) or (int(stationsData[ID]["GS"]) > gustMax):
+		if (int(stationsData[ID]["WS"]) >= windMax) or (int(stationsData[ID]["GS"]) >= gustMax):
+			debug("\033[7mMax wind or gust detected for:\033[m " + ID)
 			wd = windDim
 
 	newRGB = {}
@@ -142,6 +148,7 @@ def calcRGB(rgb, ID=None):
 	newRGB[1] = int(round(min(int(rgb[1]), int(maxBrightness)) * (1-Dimming) * (1-wd)))
 	newRGB[2] = int(round(min(int(rgb[2]), int(maxBrightness)) * (1-Dimming) * (1-wd)))
 	debug("RGB Value for LED is returned as: [" + str(newRGB[0]) + "," + str(newRGB[1]) + "," + str(newRGB[2]) + "]")
+
 	return newRGB
 
 def legendLEDsOn():
@@ -178,18 +185,27 @@ def connected():
 		return False
 
 def setPixelsRGB(rgb):
-	pixels.set_pixels_rgb(int(rgb[0]), int(rgb[1]), int(rgb[2]))
+	for i in range(totalLEDs):
+		pixels.setPixelColorRGB(i, int(rgb[0]), int(rgb[1]), int(rgb[2]))
 
 # Set an individual LED color if the address of the LED is >= 0
 def setPixelRGB(addr, rgb):
 	if (addr >= 0):
-		pixels.set_pixel_rgb(addr, int(rgb[0]), int(rgb[1]), int(rgb[2]))
+		pixels.setPixelColorRGB(addr, int(rgb[0]), int(rgb[1]), int(rgb[2]))
 
 def showPixels():
 	pixels.show()
 
 def clearPixels():
-	pixels.clear()
+	for i in range(totalLEDs):
+		setPixelRGB(i, [0,0,0])
+
+def colorWipe(pixels, color, wait_ms=50):
+    """Wipe color across display a pixel at a time."""
+    for i in range(pixels.numPixels()):
+        pixels.setPixelColor(i, color)
+        showPixels()
+        time.sleep(wait_ms/1000.0)
 
 def is_hour_between(now, start, end):
 	if (start <= end):
@@ -198,19 +214,23 @@ def is_hour_between(now, start, end):
 		return start <= now or now < end
 
 def errorLEDFlash(flash):
+	debug("LEDs on RED")
 	setPixelsRGB([255 ,0 ,0])
 	showPixels()
 	time.sleep(1)
+	debug("LEDs Off")
 	clearPixels()
 	showPixels()
 	time.sleep(1)
 	for x in range(flash):
+		debug("LEDs on RED: " + str(x+1))
 		setPixelsRGB([255 ,0 ,0])
 		showPixels()
 		time.sleep(0.5)
+		debug("LEDs Off")
 		clearPixels()
 		showPixels()
-		time.sleep(0.75)
+		time.sleep(0.25)
 	clearPixels()
 	showPixels()
 
@@ -221,11 +241,12 @@ def debug(var):
 ######################################################
 #################### End Functions ###################
 ######################################################
+#print("\033[7mReversed\033[m Normal")
 
 #A few vars
 debugOn = False
-configFile = "config.txt"
-airportListFile = "airports.txt"
+configFile = "/home/pi/LiveSectional/config.txt"
+airportListFile = "/home/pi/LiveSectional/airports.txt"
 currentHour = int(datetime.datetime.now().strftime("%H"))
 
 #Load Config Data
@@ -270,25 +291,32 @@ colorRGBs["Missing"] =  str(config.get("colorsRGB", "colorMissing")).split(",")
 colorRGBs["Red"] =  str(config.get("colorsRGB", "colorRed")).split(",")
 colorRGBs["Green"] =  str(config.get("colorsRGB", "colorGreen")).split(",")
 
-# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
-# Specify a software SPI connection for Raspberry Pi on the following pins:
-#PIXEL_CLOCK = 18
-#PIXEL_DOUT  = 23
-#pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
+LED_COUNT 		= totalLEDs					# Number of LED pixels.
+LED_PIN        	= 18      					# GPIO pin connected to the pixels (18 uses PWM!).
+#LED_PIN        = 10      					# GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
+LED_FREQ_HZ    	= 800000  					# LED signal frequency in hertz (usually 800khz)
+LED_DMA        	= 5       					# DMA channel to use for generating signal (try 5)
+LED_BRIGHTNESS 	= 255     					# Set to 0 for darkest and 255 for brightest
+LED_INVERT     	= False   					# True to invert the signal (when using NPN transistor level shift)
+LED_CHANNEL    	= 0       					# set to '1' for GPIOs 13, 19, 41, 45 or 53
+LED_STRIP      	= ws.WS2811_STRIP_RGB   	# Strip type and colour ordering
 
-# Alternatively specify a hardware SPI connection on /dev/spidev0.0:
-SPI_PORT = 0
-SPI_DEVICE = 0
-pixels = Adafruit_WS2801.WS2801Pixels(totalLEDs, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
-
+pixels = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
+pixels.begin()
 #Test for script arguements present
 #Call by adding "debug" as an arg
 # LiveSectional.py debug
 if ("debug" in sys.argv) or ("check" in sys.argv):
 	debugOn = True
 
+if ("shutdown" in sys.argv):
+	setPixelsRGB([128,128,128])
+	showPixels()
+	time.sleep(.1)
+	colorWipe(pixels, Color(0,0,0), 10)
+	sys.exit()
 
-debug("\n-------------------------------------------\nSTARTING LIVE SECTIONAL\n-------------------------------------------\n")
+debug("\n\033[7m-------------------------------------------\033[m\n          STARTING LIVE SECTIONAL\n\033[7m-------------------------------------------\033[m\n")
 
 
 #Should we even start all this stuff up or Sleep the Map
@@ -305,7 +333,8 @@ if is_hour_between(currentHour, sleepStart, sleepStop) and sleepOn:
 # "LiveSectional.py startup"
 
 if ("startup" in sys.argv) or ("check" in sys.argv):
-	
+	clearPixels()
+	showPixels()
 	debug("Checking settings...")
 	if not settingsCheck():
 		debug("Settings check Failed. Flashing RED...")

@@ -1,4 +1,3 @@
-
 [generalSettings]
 ; Total LEDs in the String
 totalLEDs: 50
@@ -56,9 +55,9 @@ windDim: .20
 ; Each can have a value from 0 - 255
 colorVFR: 0,255,0
 colorMVFR: 0,0,255
-colorIFR: 255,0,0
 colorLIFR: 255,0,255
-colorMissing: 128,128,128
+colorIFR: 255,0,0
+colorMissing: 75,75,75
 colorRed: 255,0,0
 colorGreen: 0,255,0
 
@@ -74,13 +73,13 @@ metarLED: 1
 ; If YES set to address of LED (0 - totalLEDs-1)
 legendVFR: 24
 legendMVFR: 25
-legendIFR: 26
-legendLIFR: 27
+legendLIFR: 26
+legendIFR: 27
 legendMissing: 28
 
 [Shutdown Control]
 ; Time to hold down the Power/Reset button for shutdown
-shutdownMinSeconds: 5
+shutdownMinSeconds: 3
 
 ; Pin the switch is connected to
 shutdownPin: 5

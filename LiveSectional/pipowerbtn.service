@@ -1,0 +1,10 @@
+[Unit]
+Description=pipowerbtn
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/bin/python /home/pi/LiveSectional/pishutdown.py
+
+[Install]
+WantedBy=multi-user.target
