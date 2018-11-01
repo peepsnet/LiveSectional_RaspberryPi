@@ -37,3 +37,6 @@ Install by:
 
 pip install rpi_ws281x
 
+Other Hubs Used:
+
+[gilyes/pi-shutdown](https://github.com/gilyes/pi-shutdown)
