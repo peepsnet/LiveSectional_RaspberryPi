@@ -30,7 +30,7 @@ def colorWipe(strip, color, wait_ms=50):
         strip.show()
         time.sleep(wait_ms/1000.0)
  
-def theaterChase(strip, color, wait_ms=50, iterations=10):
+def theaterChase(strip, color, wait_ms=50, iterations=25):
     """Movie theater light style chaser animation."""
     for j in range(iterations):
         for q in range(3):
@@ -102,10 +102,17 @@ if __name__ == '__main__':
 			colorWipe(strip, Color(255, 0, 0))
 			colorWipe(strip, Color(0, 255, 0))
 			colorWipe(strip, Color(0, 0, 255))
+			colorWipe(strip, Color(0, 255, 255))
+			colorWipe(strip, Color(255, 0, 255))
+			colorWipe(strip, Color(255, 255, 0))
 			print ('Theater chase animations.')
 			theaterChase(strip, Color(127,127,127))
 			theaterChase(strip, Color(127,0,0))
 			theaterChase(strip, Color(0,0,127))
+			theaterChase(strip, Color(0,127,0))
+			theaterChase(strip, Color(127,0,127))
+			theaterChase(strip, Color(127,127,0))
+			theaterChase(strip, Color(0,127,127))
 			theaterChase(strip, Color(0,127,0))
 			print ('Rainbow animations.')
 			rainbow(strip)

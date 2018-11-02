@@ -91,15 +91,19 @@ function ADD_CRON() {
 			case $choice in
 				'Every 15 min')
 					echo "Setting schedule to every 15 min"
+					LINE='*/15 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
 					;;
 				'Every 20 min')
 					echo "Setting schedule to every 20 min"
+					LINE='*/20 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
 					;;
 				'Every 30 min')
 					echo "Setting schedule to every 30 min"
+					LINE='*/30 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
 					;;
 				'Top of every hour')
 					echo "Setting schedule to top of every hour"
+					LINE='	0 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
 					;;
 				'Every X min')
 					echo "Setting schedule to every X min"
@@ -115,12 +119,15 @@ function ADD_CRON() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Adding cronjob...${NORM}"
 	#write out current crontab
-	crontab -l > mycron.tmp
+	FILE="mycron.tmp"
+	crontab -l > $FILE
 	#echo new cron into cron file
-	echo "*/15 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py" >> mycron
+#	grep -q "^LiveSectional" $FILE && sed -i "s/^LiveSectional.*/$LINE/" $FILE || echo "$LINE" >> $FILE
+	sed -i '/LiveSectional/d' $FILE
+	echo "$LINE" >> $FILE
 	#install new cron file
-	crontab mycron
-	rm mycron.tmp
+	crontab $FILE
+	rm $FILE
 	echo ""
 }
 
@@ -191,6 +198,7 @@ function COMPLETEDINSTALL() {
 function EDITLEDSAIRPORTS() {
 	echo ""
 	echo "Description on how to edit the airports.txt file"
+	echo ""
 	echo "Prese enter/return to begin editing the airport list..."
 	read -p "" readDamKey
 	nano airports.txt
@@ -233,7 +241,7 @@ select choice in "${choices[@]}"; do
 			sleep 5s
 			COMPLETEDINSTALL
 			EDITLEDSAIRPORTS
-			sleep 5s
+			sleep 1s
 			REBOOTSYS
 			;;
 		'Exit')
