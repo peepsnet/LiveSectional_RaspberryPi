@@ -75,11 +75,13 @@ function INSTALL_PIP_GPIO() {
 function CREATE_SYSTEMD_ENTRIES() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Copying .service files to /etc/systemd/system/ and updating the systemctrl...${NORM}"
-	cp  ~/LiveSectional/pipowerbtn.service /etc/systemd/system/
-	cp  ~/LiveSectional/livesectional.service /etc/systemd/system/
+	sudo cp  ~/LiveSectional/pipowerbtn.service /etc/systemd/system/
+	sudo cp  ~/LiveSectional/livesectional.service /etc/systemd/system/
 	sudo systemctl daemon-reload
-	sudo systemctl enable livesectional.service --now.
-	sudo systemctl enable pipowerbtn.service --now.
+	sudo systemctl enable livesectional.service --now
+	sudo systemctl start livesectional.service
+	sudo systemctl enable pipowerbtn.service --now
+	sudo systemctl start pipowerbtn.service
 	echo ""
 }
 
@@ -121,9 +123,9 @@ function ADD_CRON() {
 	#write out current crontab
 	FILE="mycron.tmp"
 	crontab -l > $FILE
-	#delete any lines in the cron with LiveSectional
+	#echo new cron into cron file
+#	grep -q "^LiveSectional" $FILE && sed -i "s/^LiveSectional.*/$LINE/" $FILE || echo "$LINE" >> $FILE
 	sed -i '/LiveSectional/d' $FILE
-	#Add cron to cron
 	echo "$LINE" >> $FILE
 	#install new cron file
 	crontab $FILE
@@ -201,7 +203,7 @@ function EDITLEDSAIRPORTS() {
 	echo ""
 	echo "Prese enter/return to begin editing the airport list..."
 	read -p "" readDamKey
-	nano ~/LiveSectional/airports.txt
+	nano airports.txt
 }
 ###################################
 ###################################
