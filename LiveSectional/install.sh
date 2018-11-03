@@ -201,7 +201,7 @@ function EDITLEDSAIRPORTS() {
 	echo ""
 	echo "Prese enter/return to begin editing the airport list..."
 	read -p "" readDamKey
-	nano airports.txt
+	nano ~/LiveSectional/airports.txt
 }
 ###################################
 ###################################
