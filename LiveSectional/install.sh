@@ -43,17 +43,17 @@ function INSTALL_LIVESECTIONAL() {
 	cd ~/
 	mkdir LiveSectional
 	cd LiveSectional
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/LiveSectional.py
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/airports.txt
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/config.txt
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.py
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.service
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/livesectional.service
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/single.py
-	#wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/test.py
-	#sudo chmod +x LiveSectional.py
-	#sudo chmod +x single.py
-	#sudo chmod +x test.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/LiveSectional.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/airports.txt
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/config.txt
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.service
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/livesectional.service
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/single.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/test.py
+	sudo chmod +x LiveSectional.py
+	sudo chmod +x single.py
+	sudo chmod +x test.py
 	
 	echo ""
 }
@@ -61,25 +61,25 @@ function INSTALL_LIVESECTIONAL() {
 function INSTALL_PIP_RPI_WS281X() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Installing the RPI_WS281x python library using PIP...${NORM}"
-	#sudo sudo pip install rpi_ws281x
+	sudo sudo pip install rpi_ws281x
 	echo ""
 }
 
 function INSTALL_PIP_GPIO() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Installing the RPI.GPIO python library using PIP...${NORM}"
-	#sudo sudo pip install RPi.GPIO
+	sudo sudo pip install RPi.GPIO
 	echo ""
 }
 
 function CREATE_SYSTEMD_ENTRIES() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Copying .service files to /etc/systemd/system/ and updating the systemctrl...${NORM}"
-	#cp  ~/LiveSectional/pipowerbtn.service /etc/systemd/system/
-	#cp  ~/LiveSectional/livesectional.service /etc/systemd/system/
-	#sudo systemctl daemon-reload
-	#sudo systemctl enable livesectional.service --now.
-	#sudo systemctl enable pipowerbtn.service --now.
+	cp  ~/LiveSectional/pipowerbtn.service /etc/systemd/system/
+	cp  ~/LiveSectional/livesectional.service /etc/systemd/system/
+	sudo systemctl daemon-reload
+	sudo systemctl enable livesectional.service --now.
+	sudo systemctl enable pipowerbtn.service --now.
 	echo ""
 }
 
@@ -121,9 +121,9 @@ function ADD_CRON() {
 	#write out current crontab
 	FILE="mycron.tmp"
 	crontab -l > $FILE
-	#echo new cron into cron file
-#	grep -q "^LiveSectional" $FILE && sed -i "s/^LiveSectional.*/$LINE/" $FILE || echo "$LINE" >> $FILE
+	#delete any lines in the cron with LiveSectional
 	sed -i '/LiveSectional/d' $FILE
+	#Add cron to cron
 	echo "$LINE" >> $FILE
 	#install new cron file
 	crontab $FILE
