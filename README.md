@@ -18,6 +18,7 @@ ToDo:
     - [ ] i)    How to install Raspbian
     - [ ] ii)   How to enable SSH(headless)
     - [ ] iii)  How to connect to WiFi on boot(headless)
+    - [ ] iv)   Change TimeZone so sleep and dim functions work
     - [ ] iv)   Expand Filesystem
     - [ ] v)    Download install.sh to get scripts(wget)
     - [ ] vi)   chmod +x install.sh
