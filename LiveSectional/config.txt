@@ -27,13 +27,13 @@ dimOn: True
 ; dimStart is the start hour(in 24-hour format)
 ; dimStop is the hour to end(in 24-hour format)
 ; Values are 0-23
-dimStart: 19
+dimStart: 21
 dimStop: 7
 
 ; This is the value to dim the LEDs
 ; Value is from 0 to 1
 ; A value .2 would decrease the LED value by 20%
-Dimming: .2
+Dimming: .9
 
 [windAlerts]
 ; These values can change the intensity of the LEDs for
@@ -46,7 +46,7 @@ gustMax: 15
 ; values equal to or greater then the ones set above
 ; Value is from 0 to 1
 ; A value .25 would decrease the LED value by 25%
-windDim: .20
+windDim: .9
 
 [colorsRGB]
 ; Here you can define the colors you want for each field category
@@ -71,11 +71,11 @@ metarLED: 1
 ; Do you have a Legend LED
 ; If NO set to -1 (or any int < 0)
 ; If YES set to address of LED (0 - totalLEDs-1)
-legendVFR: 24
-legendMVFR: 25
-legendLIFR: 26
-legendIFR: 27
-legendMissing: 28
+legendVFR: 45
+legendMVFR: 46
+legendLIFR: 47
+legendIFR: 48
+legendMissing: 49
 
 [Shutdown Control]
 ; Time to hold down the Power/Reset button for shutdown

@@ -39,46 +39,46 @@ def settingsCheck():
 	debug("Checking for errors in the config data")
 	#Check totalLEDs
 	if (sum(1 for line in open(airportListFile)) > totalLEDs):
-		print("\033[7mERROR:\033[m totalLEDs in " + configFile + " less then total entries in " + airportListFile)
+		debug("\033[7mERROR:\033[m totalLEDs in " + configFile + " less then total entries in " + airportListFile)
 		errors = True
 	if not (maxBrightness in range(0,256)):
-		print("\033[7mERROR:\033[m maxBrightness is not 0-255")
+		debug("\033[7mERROR:\033[m maxBrightness is not 0-255")
 		errors = True
 	if ((not sleepStart in range(0,24)) or (not sleepStop in range(0,24))) and sleepOn :
-		print("\033[7mERROR:\033[m sleepStart and sleepStop values must be between 0-23 or disable by setting sleepOn to False")
+		debug("\033[7mERROR:\033[m sleepStart and sleepStop values must be between 0-23 or disable by setting sleepOn to False")
 		errors = True
 	if ((not dimStart in range(0,24)) or (not dimStop in range(0,24))) and dimOn :
-		print("\033[7mERROR:\033[m dimStart and dimStop values must be between 0-23 or disable by setting dimOn to False")
+		debug("\033[7mERROR:\033[m dimStart and dimStop values must be between 0-23 or disable by setting dimOn to False")
 		errors = True
 	if not (0 <= Dimming <= 1):
-		print("\033[7mERROR:\033[m Dimming is not a valid value. Valid range is 0 - 1 in .01 increments.")
+		debug("\033[7mERROR:\033[m Dimming is not a valid value. Valid range is 0 - 1 in .01 increments.")
 		errors = True
 	if not windMax in range(3,51):
-		print("\033[7mERROR:\033[m windMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
+		debug("\033[7mERROR:\033[m windMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
 		errors=True
 	if not gustMax in range(3,51):
-		print("\033[7mERROR:\033[m gustMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
+		debug("\033[7mERROR:\033[m gustMax is not a valid value. Valid range is 3 - 50 in increments of 1.")
 		errors=True
 	if not (0 <= windDim <= 1):
-		print("\033[7mERROR:\033[m windDim is not a valid value. Valid range is 0-1 in increments of .01")
+		debug("\033[7mERROR:\033[m windDim is not a valid value. Valid range is 0-1 in increments of .01")
 		errors=True
 	for checkRGB in colorRGBs:
 		if not (int(colorRGBs[checkRGB][0]) in range(0,256)):
-			print("\033[7mERROR:\033[m colorsRGB RED for color " + checkRGB + " is not in range. Must be 0-255")
+			debug("\033[7mERROR:\033[m colorsRGB RED for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		if not (int(colorRGBs[checkRGB][1]) in range(0,256)):
-			print("\033[7mERROR:\033[m colorsRGB GREEN for color " + checkRGB + " is not in range. Must be 0-255")
+			debug("\033[7mERROR:\033[m colorsRGB GREEN for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		if not (int(colorRGBs[checkRGB][2]) in range(0,256)):
-			print("\033[7mERROR:\033[m colorsRGB BLUE for color " + checkRGB + " is not in range. Must be 0-255")
+			debug("\033[7mERROR:\033[m colorsRGB BLUE for color " + checkRGB + " is not in range. Must be 0-255")
 			errors=True
 		stationLEDs = getAirportLEDs()
 		miscLEDs = config.items("extraLEDs")
 		for stationLED in stationLEDs:
 			for miscLED in miscLEDs:
 				if int(stationLEDs[stationLED]) == int(miscLED[1]):
-					print("\033[7mERROR:\033[m An LED address mismatch was found.")
-					print("\033[7mERROR:\033[m " + stationLED + " LED location conflicts with " + miscLED[0])
+					debug("\033[7mERROR:\033[m An LED address mismatch was found.")
+					debug("\033[7mERROR:\033[m " + stationLED + " LED location conflicts with " + miscLED[0])
 					errors = True
 	if errors:
 		return False
@@ -178,11 +178,13 @@ def legendLEDsOff():
 	debug("Set legendLEDs to OFF")
 
 def connected():
+	debug("Looking for google.com's DNS servers...")
 	try:
-		s = socket.create_connection((socket.gethostbyname("www.google.com"), 80), 2)
+		s = socket.create_connection(("8.8.8.8", 53), 2)
 		return True
-	except:
-		return False
+	except socket.timeout:
+		pass
+	return False
 
 def setPixelsRGB(rgb):
 	for i in range(totalLEDs):
@@ -238,10 +240,15 @@ def debug(var):
 	if debugOn:
 		print(var)
 
+def debugGetLEDsRGB():
+	if debugOn:
+		for x in range(totalLEDs):
+			myLED = pixels.getPixelColorRGB(x)
+			print("LED #" + str(x) + " is color: [" + str(myLED.r) + ", " + str(myLED.g) + ", " + str(myLED.b) + "]")
+
 ######################################################
 #################### End Functions ###################
 ######################################################
-#print("\033[7mReversed\033[m Normal")
 
 #A few vars
 debugOn = False
@@ -323,8 +330,8 @@ debug("\n\033[7m-------------------------------------------\033[m\n          STA
 #if ((sleepStart >= 0) and (sleepStop >= 0)) or :
 if is_hour_between(currentHour, sleepStart, sleepStop) and sleepOn:
 	debug("Within Sleep Time. Shutting off LED and quitting... Add skip to commandline to overwrite")
-	pixels.clear()
-	pixels.show()
+	clearPixels()
+	showPixels()
 	if ("skip" not in sys.argv):
 		sys.exit()
 
@@ -342,20 +349,22 @@ if ("startup" in sys.argv) or ("check" in sys.argv):
 		sys.exit()
 	else:
 		debug("All Settings Passed Checks!")
+
 	startUpLEDs()
 
+legendLEDsOn()
 
 if not connected():
 	debug('Status: NOT Connected to internet. Setting statusLED Color to RED. \nNo use in continuing... Exiting Script!\n')
 	setPixelRGB(statusLED, colorRGBs["Red"])
+	showPixels()
 	sys.exit()
 else:
 	debug('Status: Connected to internet. Setting statusLED Color to GREEN\n')
 	setPixelRGB(statusLED, colorRGBs["Green"])
-	legendLEDsOn()
-	
 	ICAOs = getAirportList()
 	debug(ICAOs)
+
 
 	#This builds the ICAO list from the LED/Airport List for injecting into the METAR URL
 	url = ""
@@ -386,9 +395,12 @@ else:
 	except Exception as e:
 		debug("\nMetar Fetch Error: " + str(e) + "\nSetting metarLED to RED\n")
 		setPixelRGB(metarLED, colorRGBs["Red"])
+		showPixels()
+		sys.exit()
 	else:
 		debug("\nMetarData fetched successfully. Setting metarLED to GREEN\n")
 		setPixelRGB(metarLED, colorRGBs["Green"])
+
 	
 	#Load retrieved XML data to Variable
 	metarsData = ET.fromstring(metarsXML)
@@ -438,5 +450,7 @@ else:
 debug("Sending all colors to LEDs - showPixels()")
 showPixels()
 
+#debugGetLEDsRGB()
+	
 debug("FINISHED")
 debug("Script took: " + str(time.time() - start) + " Seconds")
