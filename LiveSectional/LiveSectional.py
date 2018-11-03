@@ -5,9 +5,7 @@
 ##																			##
 ##############################################################################
 ## To DO:
-## Check for airport and config file before settings check
-## Create visual error codes. Flash all LEDs red for count to indicate error.
-## Flash connected and metar LEDs if test fails
+## 
 #import pdb; pdb.set_trace()
 
 import time
@@ -356,12 +354,12 @@ legendLEDsOn()
 
 if not connected():
 	debug('Status: NOT Connected to internet. Setting statusLED Color to RED. \nNo use in continuing... Exiting Script!\n')
-	setPixelRGB(statusLED, colorRGBs["Red"])
+	setPixelRGB(statusLED, calcRGB(colorRGBs["Red"]))
 	showPixels()
 	sys.exit()
 else:
 	debug('Status: Connected to internet. Setting statusLED Color to GREEN\n')
-	setPixelRGB(statusLED, colorRGBs["Green"])
+	setPixelRGB(statusLED, calcRGB(colorRGBs["Green"]))
 	ICAOs = getAirportList()
 	debug(ICAOs)
 
