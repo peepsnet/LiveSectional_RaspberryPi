@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 import ConfigParser
 config = ConfigParser.SafeConfigParser()
-config.read("/boot/LiveSectional/config.txt")
+config.read("/home/pi/LiveSectional/config.txt")
 
 # pushbutton connected to this GPIO pin, using pin 5 also has the benefit of
 # waking / powering up Raspberry Pi when button is pressed
