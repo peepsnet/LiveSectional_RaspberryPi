@@ -8,7 +8,7 @@ I will hope to release a V1.0 soon.
 Use at your own risk!
 
 ToDo:
-- [ ] 1) Finish StartHere.sh - This script will install and then config or config
+- [ ] 1) Finish install.sh - This script will install and then config or config
   - [ ] a) add systemd entried for startup of LiveSectional.py and pipowerbtn.py
   - [ ] c) Add Cron for LiveSectional.py to be called as user specified interval
   - [ ] d) add code to modify settings in config.txt
