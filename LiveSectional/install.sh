@@ -61,7 +61,7 @@ function INSTALL_LIVESECTIONAL() {
 function INSTALL_PIP_RPI_WS281X() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Installing the RPI_WS281x python library using PIP...${NORM}"
-	sudo sudo pip install rpi_ws281x
+	sudo pip install rpi_ws281x
 	echo ""
 }
 
@@ -199,7 +199,7 @@ function COMPLETEDINSTALL() {
 
 function EDITLEDSAIRPORTS() {
 	echo ""
-	echo "Description on how to edit the airports.txt file"
+	echo "Add Description on how to edit the airports.txt file here"
 	echo ""
 	echo "Prese enter/return to begin editing the airport list..."
 	read -p "" readDamKey
