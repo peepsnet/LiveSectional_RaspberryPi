@@ -87,7 +87,7 @@ function CREATE_ACTIVATE_PYTHON_VENV() {
 	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
 	echo "${BOLD}Creating and Activating Python3 Virtural Enviroment..."
 	sudo python3 -m venv /opt/live_sectional
-	sudo source /opt/live_sectional/bin/activate
+	source /opt/live_sectional/bin/activate
 }
 
 function INSTALL_PIP_RPI_WS281X() {
