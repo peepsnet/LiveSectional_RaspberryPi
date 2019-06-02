@@ -1,8 +1,5 @@
 #!/bin/bash
-#This will install and correct a few library errors for the LiveSectional Script
-#WIP
-## https://github.com/adafruit/Adafruit_Python_GPIO
-## https://pypi.org/project/rpi_ws281x/
+#This will install the LiveSectional Script and all needed libraries from PyPI
 
 parm="*"
 err="####"
