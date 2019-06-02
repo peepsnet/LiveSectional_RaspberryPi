@@ -34,10 +34,10 @@ ToDo:
  
 Required Libraries:
 https://pypi.org/project/rpi_ws281x/
+
 https://pypi.org/project/RPi.GPIO/
+
 https://pypi.org/project/python-crontab/
-
-
 
 Other Hubs Used:
 
