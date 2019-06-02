@@ -37,127 +37,17 @@ function WELCOME() {
 	echo ""
 }
 
-function INSTALL_LIVESECTIONAL() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Getting Live Sectional WS2811 files from the github...${NORM}"
-	cd ~/
-	mkdir LiveSectional
-	cd LiveSectional
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/LiveSectional.py
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/airports.txt
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/config.txt
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.py
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.service
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/livesectional.service
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/single.py
-	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/test.py
-	sudo chmod +x LiveSectional.py
-	sudo chmod +x single.py
-	sudo chmod +x test.py
-	
-	echo ""
-}
-
-function INSTALL_PIP_RPI_WS281X() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Installing the RPI_WS281x python library using PIP...${NORM}"
-	sudo pip install rpi_ws281x
-	echo ""
-}
-
-function INSTALL_PIP_GPIO() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Installing the RPI.GPIO python library using PIP...${NORM}"
-	sudo sudo pip install RPi.GPIO
-	echo ""
-}
-
-function CREATE_SYSTEMD_ENTRIES() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Copying .service files to /etc/systemd/system/ and updating the systemctrl...${NORM}"
-	sudo cp  ~/LiveSectional/pipowerbtn.service /etc/systemd/system/
-	sudo cp  ~/LiveSectional/livesectional.service /etc/systemd/system/
-	sudo systemctl daemon-reload
-	sudo systemctl enable livesectional.service --now
-	sudo systemctl start livesectional.service
-	sudo systemctl enable pipowerbtn.service --now
-	sudo systemctl start pipowerbtn.service
-	echo ""
-}
-
-function ADD_CRON() {
-	echo "Choose your METAR update interval:"
-	choices=( 'Every 15 min' 'Every 20 min' 'Every 30 min' 'Top of every hour' 'Every X min')
-		select choice in "${choices[@]}"; do
-			[[ -n $choice ]] || { echo "Invalid choice." >&2; continue; }
-			case $choice in
-				'Every 15 min')
-					echo "Setting schedule to every 15 min"
-					LINE='*/15 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
-					;;
-				'Every 20 min')
-					echo "Setting schedule to every 20 min"
-					LINE='*/20 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
-					;;
-				'Every 30 min')
-					echo "Setting schedule to every 30 min"
-					LINE='*/30 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
-					;;
-				'Top of every hour')
-					echo "Setting schedule to top of every hour"
-					LINE='	0 * * * * sudo /usr/bin/python ~/LiveSectional/LiveSectional.py'
-					;;
-				'Every X min')
-					echo "Setting schedule to every X min"
-					;;
-				'Exit')
-					exit 0
-				;;
-				exit)
-				exit 0
-			esac
-		break
-	done
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Adding cronjob...${NORM}"
-	#write out current crontab
-	FILE="mycron.tmp"
-	crontab -l > $FILE
-	#echo new cron into cron file
-#	grep -q "^LiveSectional" $FILE && sed -i "s/^LiveSectional.*/$LINE/" $FILE || echo "$LINE" >> $FILE
-	sed -i '/LiveSectional/d' $FILE
-	echo "$LINE" >> $FILE
-	#install new cron file
-	crontab $FILE
-	rm $FILE
-	echo ""
-}
-
-function INSTALL_APTGET_EXTRAS() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Installing APT-GET packages..."
-	sudo apt-get install build-essential python-pip python-dev python-smbus git -y
-	echo ""
-}
-
-function APTGETUPDATE() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Lets start by gathering the lastest packages...${NORM}"
-	sudo apt-get update
-	echo ""
-}
-
-function APTGETUPGRADE() {
-	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
-	echo "${BOLD}Now we need to update your Raspberry Pi to the latest software...${NORM}"
-	sudo apt-get upgrade -y
-	echo ""
-}
-
-function REBOOTSYS() {
-	echo "REBOOTING!!!"
-	#sleep 5s; sudo shutdown -r now
-	echo ""
+function ROOTCHECK() {
+	echo "${BOLD}Checking if script is run as root...${NORM}"
+	if [ $(whoami) != 'root' ]; then
+		echo "${BOLD}${RED}This script must be executed as root${WHITE}${NORM}"
+		echo "${BOLD}Please run as root: ${STOT}sudo ./install.sh${NORM}"
+		echo "Exiting..."
+		exit 1
+	else
+		echo "${GREEN}Root Check passed...${NORM}"
+		echo "${GREEN}Continuing...${NORM}"
+	fi
 }
 
 function CHECKINTERNET() {
@@ -175,17 +65,93 @@ function CHECKINTERNET() {
 	fi
 }
 
-function ROOTCHECK() {
-	echo "${BOLD}Checking if script is run as root...${NORM}"
-	if [ $(whoami) != 'root' ]; then
-		echo "${BOLD}${RED}This script must be executed as root${WHITE}${NORM}"
-		echo "${BOLD}Please run as root: ${STOT}sudo ./install.sh${NORM}"
-		echo "Exiting..."
-		exit 1
-	else
-		echo "${GREEN}Root Check passed...${NORM}"
-		echo "${GREEN}Continuing...${NORM}"
-	fi
+function APTGETUPDATE() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Lets start by gathering the lastest packages...${NORM}"
+	sudo apt-get update
+	echo ""
+}
+
+function APTGETUPGRADE() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Now we need to update your Raspberry Pi to the latest software...${NORM}"
+	sudo apt-get upgrade -y
+	echo ""
+}
+
+function INSTALL_APTGET_EXTRAS() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Installing APT-GET packages..."
+	sudo apt-get install python3-venv git  -y
+	echo ""
+}
+
+function CREATE_ACTIVATE_PYTHON_VENV() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Creating and Activating Python3 Virtural Enviroment..."
+	sudo python3 -m venv /opt/live_sectional
+	sudo source /opt/rpi_metar/bin/activate
+}
+
+function INSTALL_PIP_RPI_WS281X() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Installing the RPI_WS281x python library using PIP into Python3 Virtural Enviroment...${NORM}"
+	sudo pip install rpi_ws281x --upgrade
+	echo ""
+}
+
+function INSTALL_PIP_GPIO() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Installing the RPI.GPIO python library using PIP into Python3 Virtural Enviroment...${NORM}"
+	sudo sudo pip install RPi.GPIO --upgrade
+	echo ""
+}
+
+function INSTALL_PIP_PYTHON_CRONTAB() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Installing the python-crontab python library using PIP into Python3 Virtural Enviroment...${NORM}"
+	sudo sudo pip install python-crontab --upgrade
+	echo ""
+}
+
+function INSTALL_LIVESECTIONAL() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Getting Live Sectional files from the github...${NORM}"
+	sudo cd /opt/live_sectional/lib/python3.5/site-packages
+	sudo mkdir LiveSectional
+	sudo cd LiveSectional
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/LiveSectional.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/airports.txt
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/config.txt
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/pipowerbtn.service
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/livesectional.service
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/single.py
+	wget https://raw.githubusercontent.com/peepsnet/LiveSectional_RaspberryPi/master/LiveSectional/test.py
+	sudo chmod +x LiveSectional.py
+	sudo chmod +x single.py
+	sudo chmod +x test.py
+	
+	echo ""
+}
+
+function CREATE_SYSTEMD_ENTRIES() {
+	echo "${GREEN}${BOLD}=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${NORM}"
+	echo "${BOLD}Copying .service files to /etc/systemd/system/ and updating the systemctrl...${NORM}"
+	sudo cp /opt/live_sectional/lib/python3.5/site-packages/LiveSectional/pipowerbtn.service /etc/systemd/system/
+	sudo cp /opt/live_sectional/lib/python3.5/site-packages/LiveSectional/livesectional.service /etc/systemd/system/
+	sudo systemctl daemon-reload
+	sudo systemctl enable livesectional.service --now
+	sudo systemctl start livesectional.service
+	sudo systemctl enable pipowerbtn.service --now
+	sudo systemctl start pipowerbtn.service
+	echo ""
+}
+
+function REBOOTSYS() {
+	echo "REBOOTING!!!"
+	#sleep 5s; sudo shutdown -r now
+	echo ""
 }
 
 function COMPLETEDINSTALL() {
@@ -235,11 +201,12 @@ select choice in "${choices[@]}"; do
 			APTGETUPDATE
 			APTGETUPGRADE
 			INSTALL_APTGET_EXTRAS
-			INSTALL_LIVESECTIONAL
+			CREATE_ACTIVATE_PYTHON_VENV
 			INSTALL_PIP_RPI_WS281X
 			INSTALL_PIP_GPIO
+			INSTALL_PIP_PYTHON_CRONTAB
+			INSTALL_LIVESECTIONAL
 			CREATE_SYSTEMD_ENTRIES
-			ADD_CRON
 			sleep 5s
 			COMPLETEDINSTALL
 			EDITLEDSAIRPORTS
