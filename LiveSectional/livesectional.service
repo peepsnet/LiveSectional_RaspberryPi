@@ -1,11 +1,12 @@
 [Unit]
-Description=livesectional
+Description=Live Sectional
 
 [Service]
-Type=oneshot
-RemainAfterExit=true
-ExecStart=/usr/bin/python /home/pi/LiveSectional/LiveSectional.py startup
-ExecStop=/usr/bin/python /home/pi/LiveSectional/LiveSectional.py shutdown
+ExecStart=/opt/live_sectional/bin/python3 /opt/live_sectional/lib/python3.5/site-packages/LiveSectional/LiveSectional.py startup
+ExecStop=/opt/live_sectional/bin/python3 /opt/live_sectional/lib/python3.5/site-packages/LiveSectional/LiveSectional.py shutdown
+User=root
+Group=root
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
